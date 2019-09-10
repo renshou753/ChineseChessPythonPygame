@@ -15,11 +15,14 @@ def main():
             if event.type == pygame.QUIT:
                 return pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
+                #board.mouse_click()
+                #board.hover_mouse()
                 pass
         
         win.fill(bgC)
         
         board.create()
+        board.hover_mouse()
 
         pygame.display.flip()
         clock.tick(fps)

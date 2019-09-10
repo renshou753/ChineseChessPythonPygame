@@ -9,7 +9,8 @@ class Board:
         self.cols = cols
 
         self.highlight = None
-        self.select = None
+        self.highlight_index = None
+        self.selected = None
 
         # create empty pieces for the board
         self.board = [[0 for x in range(cols)] for _ in range(rows)]
@@ -51,6 +52,11 @@ class Board:
     # convert from matrix(indexX, indexY) to the actual position on board  
     def convert(self, inX, inY):
         return startX + inX * cellW, startY + inY * cellW
+    
+    # convet from the actual position to the x,y index on the matrix
+    def convertToIndex(self, posX, posY):
+        x, y = round((posX - startX) / cellW, 0), round((posY - startY) / cellW, 0)
+        return int(x), int(y)
 
     def create(self):
         # draw 10 horizontal lines
@@ -81,19 +87,43 @@ class Board:
         pygame.draw.line(self.win, white, (x1, y3), (x2, y4), 2)
         pygame.draw.line(self.win, white, (x2, y3), (x1, y4), 2)
 
-        # fraw each piece
+        # draw each piece
         for i, row in enumerate(self.board):
             for j, piece in enumerate(row):
                 if piece != 0:
                     posX, posY = self.convert(j, i)
                     pygame.draw.circle(self.win, pieceColor, (posX, posY), radius)
                     piece.drawText(posX, posY)
+                    # piece.makeMoves()
         
     
     def draw_text(self, size, text, color, posX, posY):
         font = pygame.font.Font("static/font.ttf", size)
         surf = font.render(text, False, color)
         self.win.blit(surf, (posX, posY))
+
+    def hover_mouse(self):
+        posX, posY = pygame.mouse.get_pos()
+        inX, inY = self.convertToIndex(posX, posY)
+        if 0 <= inX <= 8 and 0 <= inY <= 9:
+            x, y = self.convert(inX, inY)
+            pygame.draw.circle(self.win, white, (x, y), radius, 2)
+            self.highlight = self.board[inY][inX]
+            self.highlight_index = (inX, inY)
+
+    def mouse_click(self):
+        if not self.highlight:
+            return
+        # if previously didn't select anything select current highlighted piece
+        if not self.selected and self.highlight is not None:
+            self.selected = self.highlight_index
+        # if already selected, check if the direction user points to is an attack
+        elif self.selected:
+            if self.highlight_index != self.selected:
+                self.board[self.selected[1], self.selected[0]] = 0
+                self.board[highlight_index[1], highlight_index[0]] = self.highlight
+            self.selected = None
+
 
 
         

@@ -18,6 +18,9 @@ class Chariot(Piece):
     def drawText(self, posX, posY):
         self.board.draw_text(fontSize, '车', self.clr, posX - textMove, posY- textMove)
 
+    def makeMoves(self):
+        pass
+
 
 class Horse(Piece):
     def __init__(self, board, clr):
