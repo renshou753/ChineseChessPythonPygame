@@ -15,9 +15,7 @@ def main():
             if event.type == pygame.QUIT:
                 return pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                #board.mouse_click()
-                #board.hover_mouse()
-                pass
+                board.mouse_click()
         
         win.fill(bgC)
         

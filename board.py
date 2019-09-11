@@ -94,7 +94,7 @@ class Board:
                     posX, posY = self.convert(j, i)
                     pygame.draw.circle(self.win, pieceColor, (posX, posY), radius)
                     piece.drawText(posX, posY)
-                    # piece.makeMoves()
+                    piece.makeMoves()
         
     
     def draw_text(self, size, text, color, posX, posY):
@@ -112,16 +112,18 @@ class Board:
             self.highlight_index = (inX, inY)
 
     def mouse_click(self):
-        if not self.highlight:
+        if not self.highlight_index:
             return
         # if previously didn't select anything select current highlighted piece
-        if not self.selected and self.highlight is not None:
+        if not self.selected and self.highlight != 0:
             self.selected = self.highlight_index
         # if already selected, check if the direction user points to is an attack
         elif self.selected:
             if self.highlight_index != self.selected:
-                self.board[self.selected[1], self.selected[0]] = 0
-                self.board[highlight_index[1], highlight_index[0]] = self.highlight
+                selected_piece = self.board[self.selected[1]][self.selected[0]]
+                if self.highlight_index in selected_piece.valid_move:
+                    self.board[self.selected[1]][self.selected[0]] = 0
+                    self.board[self.highlight_index[1]][self.highlight_index[0]] = selected_piece
             self.selected = None
 
 
