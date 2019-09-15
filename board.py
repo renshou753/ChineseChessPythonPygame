@@ -1,6 +1,9 @@
 import pygame
 from pieces import *
 from config import startX, startY, cellW, white, red, pieceColor, radius
+pygame.mixer.init()
+moveEffect = pygame.mixer.Sound('static/sounds/move.wav')
+captureEffect = pygame.mixer.Sound('static/sounds/capture.wav')
 
 class Board:
     def __init__(self, win, rows, cols):
@@ -98,7 +101,7 @@ class Board:
         
     
     def draw_text(self, size, text, color, posX, posY):
-        font = pygame.font.Font("static/font.ttf", size)
+        font = pygame.font.Font("static/font/font.ttf", size)
         surf = font.render(text, False, color)
         self.win.blit(surf, (posX, posY))
 
@@ -111,20 +114,42 @@ class Board:
             self.highlight = self.board[inY][inX]
             self.highlight_index = (inX, inY)
 
-    def mouse_click(self):
+    def mouse_click(self, turn):
         if not self.highlight_index:
-            return
+            return turn
         # if previously didn't select anything select current highlighted piece
-        if not self.selected and self.highlight != 0:
+        if not self.selected and self.highlight != 0 and self.highlight.clr == turn:
             self.selected = self.highlight_index
         # if already selected, check if the direction user points to is an attack
         elif self.selected:
             if self.highlight_index != self.selected:
                 selected_piece = self.board[self.selected[1]][self.selected[0]]
                 if self.highlight_index in selected_piece.valid_move:
+                    # check whether general was killed
+                    gameover = self.checkWinner(turn)
+                    if gameover:
+                         return gameover
                     self.board[self.selected[1]][self.selected[0]] = 0
                     self.board[self.highlight_index[1]][self.highlight_index[0]] = selected_piece
+                    if self.highlight == 0:
+                        moveEffect.play()
+                    else:
+                        captureEffect.play()
+                    # change turn
+                    if turn == red:
+                        turn = black
+                    else:
+                        turn = red
             self.selected = None
+        return turn
+    
+    def checkWinner(self, turn):
+        gameover = ""
+        selected_piece = self.board[self.highlight_index[1]][self.highlight_index[0]]
+        if isinstance(selected_piece, General):
+            gameover = "End"
+        return gameover
+
 
 
 
