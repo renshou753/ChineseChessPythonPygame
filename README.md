@@ -11,4 +11,4 @@ python game.py
 * pygame library
 
 ### Demo
-![](../static/img/board.png)
+![](/static/img/board.png)
